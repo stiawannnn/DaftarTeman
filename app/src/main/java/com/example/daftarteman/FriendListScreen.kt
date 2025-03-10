@@ -1,4 +1,6 @@
 package com.example.daftarteman
+
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +13,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,10 +24,40 @@ fun FriendListScreen(navController: NavController) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Daftar Teman") }) }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            DataSource.friends.forEach { friend ->
-                FriendItem(friend = friend) {
-                    navController.navigate("detail/${friend.id}")
+        val configuration = LocalConfiguration.current
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+        if (isLandscape) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(DataSource.friends) { friend ->
+                        FriendItem(friend = friend) {
+                            navController.navigate("detail/${friend.id}")
+                        }
+                    }
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(DataSource.friends) { friend ->
+                    FriendItem(friend = friend) {
+                        navController.navigate("detail/${friend.id}")
+                    }
                 }
             }
         }
@@ -56,4 +91,3 @@ fun FriendItem(friend: Friend, onClick: () -> Unit) {
         }
     }
 }
-
